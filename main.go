@@ -12,16 +12,13 @@ import (
 )
 
 type Car struct {
-	ID      uint       `db:"id"`
-	Details CarDetails `db:"details"`
+	ID      uint    `db:"id"`
+	Details Details `db:"details"`
 }
 
-type CarDetails struct {
-	Make  string `json:"make"`
-	Model string `json:"model"`
-}
+type Details map[string]any
 
-func (d *CarDetails) Scan(src interface{}) error {
+func (d *Details) Scan(src interface{}) error {
 	switch src := src.(type) {
 	case []byte:
 		return json.Unmarshal(src, d)
@@ -32,7 +29,7 @@ func (d *CarDetails) Scan(src interface{}) error {
 	}
 }
 
-func (d CarDetails) Value() (driver.Value, error) {
+func (d Details) Value() (driver.Value, error) {
 	return json.Marshal(d)
 }
 
@@ -49,9 +46,9 @@ func main() {
 
 	// Create a new car
 	car := Car{
-		Details: CarDetails{
-			Make:  "Honda",
-			Model: "Civic",
+		Details: Details{
+			"make":  "Honda",
+			"model": "Civic",
 		},
 	}
 
